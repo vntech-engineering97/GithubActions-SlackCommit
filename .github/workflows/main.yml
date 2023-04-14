@@ -1,13 +1,17 @@
 name: Slack Notification Demo
 
 on: 
+  pull_request:
+    types: [closed]
   push:
    branches:
       - main
 
 jobs:
-  slackNotification:
+  send-message:
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
