@@ -1,0 +1,33 @@
+name: Send commit message to Slack
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  send-message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Send commit message to Slack
+        uses: 8398a7/action-slack@v3
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: your-channel
+        with:
+          args: |
+            -m "Commit message: ${{ github.event.head_commit.message }}"
+            -b ${{ github.base_ref }}
+            -h ${{ github.head_ref }}
+            -u ${{ github.actor }}
