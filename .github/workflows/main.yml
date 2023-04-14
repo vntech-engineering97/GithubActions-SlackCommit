@@ -4,6 +4,7 @@ on: push
 
 jobs:
   slackNotification:
+    name: Slack Notification
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
