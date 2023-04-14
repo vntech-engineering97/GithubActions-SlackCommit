@@ -1,21 +1,15 @@
-name: Send commit message to Slack
+name: Slack Notification Demo
 
-on:
-  push:
-    branches:
-      - main
+on: push
+
 
 jobs:
-  send-message:
+  slackNotification:
+    name: Slack Notification
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Send commit message to Slack
-        uses: rtCamp/action-slack-notify@v2
-        with:
-          slack_bot_token: ${{ secrets.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}
-          channel_id: '#general'
-          message: "New commit: ${{ github.event.head_commit.message }}"
-          username: GitHub Actions
+    - uses: actions/checkout@v2
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
