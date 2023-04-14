@@ -1,18 +1,27 @@
-name: Slack Notification
-on:
-  push:
-    branches: [ main ]
+name: Slack Notification Demo
+
+on: 
   pull_request:
-    types: [ closed ]
+    types: [closed]
+  push:
+   branches:
+      - main
 
 jobs:
-  notify:
+  send-message:
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged
+    
     steps:
-      - uses: actions/checkout@v2
-      - name: Notify on merge
-        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"New commit(s) merged: $(git log --pretty=format:'%s' --abbrev-commit ${{ github.event.pull_request.head.sha }}..${{ github.event.pull_request.base.sha }})\",\"username\":\"GitHub Actions\"}" $SLACK_WEBHOOK_URL
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_CHANNEL: testing
+        SLACK_COLOR: ${{ job.status }} 
+        SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_TITLE: Commit Message
+        SLACK_USERNAME: slackBot
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
