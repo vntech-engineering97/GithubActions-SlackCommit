@@ -1,27 +1,20 @@
-name: Slack Notification Demo
-
-on: 
+name: Notify Slack on merged pull requests
+on:
   pull_request:
-    types: [closed]
-  push:
-   branches:
-      - main
+    types:
+      - closed
+    branches:    
+      - 'main'
 
 jobs:
-  send-message:
+  notify_merged_pull_request:
+    name: Notify Slack on merged pull requests
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged
-    
+    if: ${{ github.base_ref == 'main' && github.event.pull_request.merged == true }}
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      
-    - name: Slack Notification
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_CHANNEL: testing
-        SLACK_COLOR: ${{ job.status }} 
-        SLACK_ICON: https://github.com/rtCamp.png?size=48
-        SLACK_TITLE: Commit Message
-        SLACK_USERNAME: slackBot
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      - uses: abinoda/slack-action@master
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        with:
+          args: '{\"channel\":\"${{ secrets.SLACK_CHANNEL_ID }}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*Merged Pull Request:* ${{ github.event.pull_request.title }}\"}},{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*Pull Request by :* ${{ github.event.pull_request.user.login }}\n*Merged at:* ${{ github.event.pull_request.merged_at }}\"}},{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"<${{ github.event.pull_request.html_url }}|View Merged Pull Request>\"}}]}' 
+        if: success()
