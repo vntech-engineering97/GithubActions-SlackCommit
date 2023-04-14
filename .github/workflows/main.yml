@@ -13,8 +13,9 @@ jobs:
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_CHANNEL: testing
-        SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
+        SLACK_COLOR: ${{ job.status }} 
         SLACK_ICON: SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_MSG_AUTHOR: $GITHUB_ACTOR
         SLACK_TITLE: Commit Message
         SLACK_USERNAME: slackBot
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
