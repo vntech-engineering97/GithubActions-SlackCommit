@@ -1,4 +1,4 @@
-ame: Send commit message on merge to Slack
+name: Send commit message on merge to Slack
 
 on:
   pull_request:
