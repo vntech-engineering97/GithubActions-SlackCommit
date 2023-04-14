@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Send commit message to Slack
 
 on:
@@ -7,33 +5,17 @@ on:
     branches:
       - main
 
-
 jobs:
   send-message:
     runs-on: ubuntu-latest
-    env:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - name: Send commit message to Slack
+        uses: rtCamp/action-slack-notify@v2
         with:
-          node-version: 14.x
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Slack Notification
-        uses: act10ns/slack@v1
-        with: 
-          status: ${{ job.status }}
-          channel: '#general'
-          if: always()
-          args: |
-            -m "Commit message: ${{ github.event.head_commit.message }}"
-            -b ${{ github.base_ref }}
-            -h ${{ github.head_ref }}
-            -u ${{ github.actor }}
+          slack_bot_token: ${{ secrets.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}
+          channel_id: '#general'
+          message: "New commit: ${{ github.event.head_commit.message }}"
+          username: GitHub Actions
