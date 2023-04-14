@@ -11,6 +11,9 @@ on:
 jobs:
   send-message:
     runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -23,12 +26,12 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Send commit message to Slack
-        uses: 8398a7/action-slack@v3
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_CHANNEL: general
-        with:
+      - name: Slack Notification
+        uses: act10ns/slack@v1
+        with: 
+          status: ${{ job.status }}
+          channel: '#meetups'
+          if: always()
           args: |
             -m "Commit message: ${{ github.event.head_commit.message }}"
             -b ${{ github.base_ref }}
